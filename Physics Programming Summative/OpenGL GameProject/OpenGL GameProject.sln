@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGL GameProject", "OpenGL GameProject\OpenGL GameProject.vcxproj", "{0086692B-27E7-4A4E-9467-477144B67DDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Debug|x64.ActiveCfg = Debug|x64
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Debug|x64.Build.0 = Debug|x64
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Debug|x86.ActiveCfg = Debug|Win32
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Debug|x86.Build.0 = Debug|Win32
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Release|x64.ActiveCfg = Release|x64
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Release|x64.Build.0 = Release|x64
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Release|x86.ActiveCfg = Release|Win32
+		{0086692B-27E7-4A4E-9467-477144B67DDF}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F166514E-3167-4B69-A960-C1F365533CB6}
+	EndGlobalSection
+EndGlobal
