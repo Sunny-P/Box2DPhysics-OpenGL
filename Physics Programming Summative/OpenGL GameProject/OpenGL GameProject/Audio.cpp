@@ -1,3 +1,4 @@
+#pragma once
 #include "Audio.h"
 #include <iostream>
 
@@ -5,7 +6,7 @@ Audio::Audio()
 {
 	Init();
 
-	result = audioSystem->createSound("Resources/Audio/Bone_Dance.ogg", FMOD_LOOP_NORMAL, 0, &Bone_Dance);
+	/*result = audioSystem->createSound("Resources/Audio/Bone_Dance.ogg", FMOD_LOOP_NORMAL, 0, &Bone_Dance);
 	backgroundMusicVec.push_back(Bone_Dance);
 	result = audioSystem->createSound("Resources/Audio/Deadlands.ogg", FMOD_LOOP_NORMAL, 0, &Deadlands);
 	backgroundMusicVec.push_back(Deadlands);
@@ -21,7 +22,7 @@ Audio::Audio()
 	result = audioSystem->createSound("Resources/Audio/Creak.wav", FMOD_DEFAULT, 0, &creak);
 	sfxVec.push_back(creak);
 
-	result = audioSystem->createSound("Resources/Audio/Creak.wav", FMOD_DEFAULT, 0, &menuClick);
+	result = audioSystem->createSound("Resources/Audio/Creak.wav", FMOD_DEFAULT, 0, &menuClick);*/
 }
 
 Audio::~Audio()

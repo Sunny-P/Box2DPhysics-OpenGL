@@ -1,3 +1,4 @@
+#pragma once
 #include "Input.h"
 #include <iostream>
 #include "Camera.h"

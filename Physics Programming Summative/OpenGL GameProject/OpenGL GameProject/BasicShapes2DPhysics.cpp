@@ -1,3 +1,4 @@
+#pragma once
 #include "BasicShapes2DPhysics.h"
 #include "texture.h"
 
@@ -170,21 +171,23 @@ void BasicShapes2DPhysics::IncrementPosition(glm::vec3 _incrementVec)
 {
 	position += _incrementVec;
 
-	world->DestroyBody(body);
-	bodyDef.position.Set((float32)position.x, (float32)position.y);
-	body = world->CreateBody(&bodyDef);
+	//world->DestroyBody(body);
+	//bodyDef.position.Set((float32)position.x, (float32)position.y);
+	//body = world->CreateBody(&bodyDef);
+	b2Vec2 tempVec = body->GetTransform().p;
+	body->SetTransform(tempVec + b2Vec2(_incrementVec.x, _incrementVec.y), body->GetAngle());
 
 	//body->DestroyFixture(fixture);
-	if (physicsShapeType == SQUARE)
-	{
-		fixtureDef.shape = &dynamicBox;
-	}
-	else if (physicsShapeType == CIRCLE)
-	{
-		fixtureDef.shape = &physicsCircle;
-	}
-	//fixture = body->CreateFixture(&fixtureDef);
-	body->CreateFixture(&fixtureDef);
+	//if (physicsShapeType == SQUARE)
+	//{
+	//	fixtureDef.shape = &dynamicBox;
+	//}
+	//else if (physicsShapeType == CIRCLE)
+	//{
+	//	fixtureDef.shape = &physicsCircle;
+	//}
+	////fixture = body->CreateFixture(&fixtureDef);
+	//body->CreateFixture(&fixtureDef);
 }
 
 void BasicShapes2DPhysics::SetPosition(float _XPos, float _YPos, float _ZPos)
@@ -193,21 +196,22 @@ void BasicShapes2DPhysics::SetPosition(float _XPos, float _YPos, float _ZPos)
 	position.y = _YPos;
 	position.z = _ZPos;
 
-	world->DestroyBody(body);
-	bodyDef.position.Set((float32)position.x, (float32)position.y);
-	body = world->CreateBody(&bodyDef);
+	//world->DestroyBody(body);
+	//bodyDef.position.Set((float32)position.x, (float32)position.y);
+	//body = world->CreateBody(&bodyDef);
+	body->SetTransform(b2Vec2(position.x, position.y), body->GetAngle());
 
 	//body->DestroyFixture(fixture);
-	if (physicsShapeType == SQUARE)
+	/*if (physicsShapeType == SQUARE)
 	{
 		fixtureDef.shape = &dynamicBox;
 	}
 	else if (physicsShapeType == CIRCLE)
 	{
 		fixtureDef.shape = &physicsCircle;
-	}
+	}*/
 	//fixture = body->CreateFixture(&fixtureDef);
-	body->CreateFixture(&fixtureDef);
+	//body->CreateFixture(&fixtureDef);
 }
 
 void BasicShapes2DPhysics::SetRotation(glm::vec3 rotationVec)

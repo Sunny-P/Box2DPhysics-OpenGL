@@ -1,3 +1,4 @@
+#pragma once
 #include "ShaderLoader.h"
 #include "Dependencies\soil\SOIL.h"
 #include "Dependencies\glew\glew.h"
@@ -28,7 +29,7 @@ Game::Game(int _width, int _height)
 	backgroundFilePath = "Resources/Textures/water.png";*/
 	currentGameState = DEFAULT;
 
-	audioSys = new Audio();
+	//audioSys = new Audio();
 
 	width = _width;
 	height = _height;
@@ -84,7 +85,7 @@ Game::Game(int _width, int _height)
 
 Game::~Game()
 {
-	delete audioSys;
+	//delete audioSys;
 
 	for (auto it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
@@ -172,8 +173,8 @@ void Game::init()
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
 
 	ground = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
-	ground->SetScale(SCR_WIDTH, 20.0f, 1.0f);
-	ground->SetPosition(CENTRE_X, 3.0f, 0.0f);
+	ground->SetScale((float)SCR_WIDTH, 20.0f, 1.0f);
+	ground->SetPosition((float)CENTRE_X, 3.0f, 0.0f);
 
 	leftBoundWall = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
 	leftBoundWall->SetScale(20.0f, 650.0f, 1.0f);
@@ -239,29 +240,81 @@ void Game::init()
 	tempDetails = CreateTexture("Resources/Textures/angryBirdsPig.png");
 	for (int i = 0; i < 8; i++)
 	{
-		pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE));
-		pigsVec.back()->SetRadius(25.0f);
-		pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+		if (i == 0)
+		{
+			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE));
+			pigsVec.back()->SetRadius(18.0f);
+			pigsVec.back()->SetPosition((float)CENTRE_X - 70.0f + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+			pigsVec.back()->SetFriction(1.0f);
+		}
+		else
+		{
+
+			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE));
+			pigsVec.back()->SetRadius(25.0f);
+			pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+		}
 	}
 
 	tempDetails = CreateTexture("Resources/Textures/glassTexture.png");
 	glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
-	glassBlock1->SetScale(20.0f, 150.0f, 1.0f);
-	glassBlock1->SetPosition((float)CENTRE_X, 88.0f, 0.0f);
+	glassBlock1->SetScale(320.0f, 25.0f, 1.0f);
+	glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 88.0f, 0.0f);
+	glassBlock1->SetFriction(1.0f);
 
 	glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
 	glassBlock2->SetScale(15.0f, 150.0f, 1.0f);
-	glassBlock2->SetPosition((float)CENTRE_X + 172.0f, 88.0f, 0.0f);
+	glassBlock2->SetPosition((float)CENTRE_X + 250.0f, 88.0f, 0.0f);
 
 	glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
 	glassBlock3->SetScale(15.0f, 150.0f, 1.0f);
 	glassBlock3->SetPosition((float)CENTRE_X + 380.0f, 88.0f, 0.0f);
+
+	glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	glassBlock4->SetScale(25.0f, 25.0f, 1.0f);
+	glassBlock4->SetPosition((float)CENTRE_X - 200.0f, 100.0f, 0.0f);
 
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
 	crateBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
 	crateBlock1->SetScale(225.0f, 20.0f, 1.0f);
 	crateBlock1->SetPosition((float)CENTRE_X + 278.0f, 173.0f, 0.0f);
 
+	crateBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	crateBlock2->SetScale(25.0f, 30.0f, 1.0f);
+	crateBlock2->SetPosition((float)CENTRE_X, (float)CENTRE_Y, 0.0f);
+
+	crateBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock3->SetScale(100.0f, 30.0f, 1.0f);
+	crateBlock3->SetPosition((float)CENTRE_X - 45.0f, (float)CENTRE_Y, 0.0f);
+
+	crateBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock4->SetScale(50.0f, 50.0f, 1.0f);
+	crateBlock4->SetPosition((float)CENTRE_X + 220.0f, 190.0f, 0.0f);
+
+	crateBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock5->SetScale(70.0f, 80.0f, 1.0f);
+	crateBlock5->SetPosition((float)CENTRE_X - 8.0f, CENTRE_Y - 30.0f, 0.0f);
+
+	// Revolute Joint
+	revJointDef.Initialize(crateBlock2->GetPhysicsBody(), crateBlock3->GetPhysicsBody(), crateBlock2->GetPhysicsBody()->GetWorldCenter());
+	revJointDef.lowerAngle = 0.0f * b2_pi;
+	revJointDef.upperAngle = glm::radians(360.0f);
+	revJointDef.enableLimit = true;
+	revJointDef.maxMotorTorque = 20.0f;
+	revJointDef.motorSpeed = 30.0f;
+	revJointDef.enableMotor = true;
+
+	//Pulley Joint
+	b2Vec2 anchor1 = glassBlock4->GetPhysicsBody()->GetWorldCenter();
+	b2Vec2 anchor2 = crateBlock4->GetPhysicsBody()->GetWorldCenter();
+	b2Vec2 groundAnchor1(glassBlock4->GetPhysicsBody()->GetTransform().p.x, 4.0f);
+	b2Vec2 groundAnchor2((float)CENTRE_X + 200.0f, 5.0f);
+	float32 ratio = 1.0f;
+	b2PulleyJointDef pulleyJointDef;
+	pulleyJointDef.Initialize(glassBlock4->GetPhysicsBody(), crateBlock4->GetPhysicsBody(), groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
+	pulleyJoint = (b2PulleyJoint*)physicsWorld->CreateJoint(&pulleyJointDef);
+
+	revJoint = (b2RevoluteJoint*)physicsWorld->CreateJoint(&revJointDef);
 	//physicsCircle->SetDensity(1.0f);
 }
 
@@ -269,7 +322,7 @@ void Game::render()
 {
 	// Render Skybox no matter what
 	//skybox->Render(cubemapProgram);
-	background2D->render(program);
+	//background2D->render(program);
 
 	switch (currentGameState)
 	{
@@ -284,8 +337,13 @@ void Game::render()
 		glassBlock1->render(program);
 		glassBlock2->render(program);
 		glassBlock3->render(program);
+		glassBlock4->render(program);
 
 		crateBlock1->render(program);
+		crateBlock2->render(program);
+		crateBlock3->render(program);
+		crateBlock4->render(program);
+		crateBlock5->render(program);
 
 		RenderGameScene();
 		break;
@@ -299,7 +357,7 @@ void Game::render()
 
 void Game::update()
 {
-	audioSys->Update();
+	//audioSys->Update();
 	// Calc deltaTime
 	currentTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = (currentTime - previousTimeStamp) * 0.001f;
@@ -360,12 +418,17 @@ void Game::update()
 	case DEFAULT:
 		physicsWorld->Step((float32)physicsDeltaT, (int32)velocityIterations, (int32)positionIterations);
 
-		for (int i = 0; i < birdsVec.size(); i++)
+		for (unsigned int i = 0; i < birdsVec.size(); i++)
 		{
 			birdsVec.at(i)->update();
 		}
 
-		for (int i = 0; i < pigsVec.size(); i++)
+		for (unsigned int i = 0; i < firedBirds.size(); i++)
+		{
+			firedBirds.at(i)->update();
+		}
+
+		for (unsigned int i = 0; i < pigsVec.size(); i++)
 		{
 			pigsVec.at(i)->update();
 		}
@@ -380,8 +443,13 @@ void Game::update()
 		glassBlock1->update();
 		glassBlock2->update();
 		glassBlock3->update();
+		glassBlock4->update();
 
 		crateBlock1->update();
+		crateBlock2->update();
+		crateBlock3->update();
+		crateBlock4->update();
+		crateBlock5->update();
 		break;
 
 	default:
@@ -441,12 +509,17 @@ void Game::RenderGameScene()
 		
 	}
 
-	for (int i = 0; i < birdsVec.size(); i++)
+	for (unsigned int i = 0; i < birdsVec.size(); i++)
 	{
 		birdsVec.at(i)->render(program);
 	}
 
-	for (int i = 0; i < pigsVec.size(); i++)
+	for (unsigned int i = 0; i < firedBirds.size(); i++)
+	{
+		firedBirds.at(i)->render(program);
+	}
+
+	for (unsigned int i = 0; i < pigsVec.size(); i++)
 	{
 		pigsVec.at(i)->render(program);
 	}
@@ -516,14 +589,14 @@ void Game::processInput()
 		}
 
 		// Camera movement
-		if ((Input::GetKeyState('w') == DOWN) || (Input::GetKeyState('W') == DOWN))
+		/*if ((Input::GetKeyState('w') == DOWN) || (Input::GetKeyState('W') == DOWN))
 		{
 			camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f));
 		}
 		if ((Input::GetKeyState('s') == DOWN) || (Input::GetKeyState('S') == DOWN))
 		{
 			camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, -0.25f));
-		}
+		}*/
 
 		// R key to restart scene
 		if ((Input::GetKeyState('r') == DOWN_FIRST) || (Input::GetKeyState('R') == DOWN_FIRST))
@@ -533,40 +606,53 @@ void Game::processInput()
 		}
 
 		// Check mouse click
-		if (Input::GetMouseState(MOUSE_LEFT) == DOWN_FIRST)
-		{
-			// Mouse picking code example from previous working code
-			// If "forwardButton" is clicked
-			/*if (UpdateMousePicking(forwardButton))
-			{
-				// This moved the camera forwards some
-				camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f));
-				// I did not use deltaTime here. This line should have been:
-				camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f * deltaTime));
-				// Albeit, it would have moved slower, but the value is only that low because I did not use deltaTime
-			}*/
-			firedBirds.push_back(birdsVec.back());
-			birdsVec.pop_back();
+		//if (Input::GetMouseState(MOUSE_LEFT) == DOWN_FIRST)
+		//{
+		//	// Mouse picking code example from previous working code
+		//	// If "forwardButton" is clicked
+		//	/*if (UpdateMousePicking(forwardButton))
+		//	{
+		//		// This moved the camera forwards some
+		//		camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f));
+		//		// I did not use deltaTime here. This line should have been:
+		//		camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f * deltaTime));
+		//		// Albeit, it would have moved slower, but the value is only that low because I did not use deltaTime
+		//	}*/
+		//	if (!birdsVec.empty())
+		//	{
+		//		firedBirds.push_back(birdsVec.back());
+		//		birdsVec.pop_back();
+		//	}
 
-		}
+		//}
 		if (Input::GetMouseState(MOUSE_LEFT) == DOWN)
 		{
-			if (Input::GetMousePosition().x < 250.0f)
-			{
+			//if ((float)mouseX < 250.0f)
+			//{
 				//std::cout << mouseX << std::endl;
-				if (!firedBirds.empty())
+				//std::cout << mouseY << std::endl;
+				if (currentAmmo > 0)
 				{
-					firedBirds.back()->SetPosition(Input::GetMousePosition().x, Input::GetMousePosition().y, 0.0f);
+					std::cout << "setting position of bird at back of birds vector" << std::endl;
+					birdsVec.back()->SetPosition((float)mouseX, (float)SCR_HEIGHT - (float)mouseY, 0.0f);
 				}
-			}
+			//}
 		}
 		if (Input::GetMouseState(MOUSE_LEFT) == UP_FIRST)
 		{
-			if (Input::GetMousePosition().x < 250.0f)
+			if ((float)mouseX < 250.0f)
 			{
-				if (!firedBirds.empty())
+				if (currentAmmo > 0)
 				{
-					firedBirds.back()->GetPhysicsBody()->ApplyForce(b2Vec2(Input::GetMousePosition().x - slingShot->GetXPosition(), Input::GetMousePosition().y - (slingShot->GetYPosition() + (slingShot->GetYScale()*0.5f))), firedBirds.back()->GetPhysicsBody()->GetWorldCenter(), true);
+					currentAmmo--;
+					std::cout << "back bird pushed into fired vector and popped out birds vector" << std::endl;
+					firedBirds.push_back(birdsVec.back());
+					birdsVec.pop_back();
+					if (!firedBirds.empty())
+					{
+						std::cout << "force applied to bird at back of fired birds vector" << std::endl;
+						firedBirds.back()->GetPhysicsBody()->ApplyForce(b2Vec2(mouseX - slingShot->GetXPosition(), ((float)SCR_HEIGHT - mouseY) - (slingShot->GetYPosition() + (slingShot->GetYScale()*0.5f))), firedBirds.back()->GetPhysicsBody()->GetWorldCenter(), true);
+					}
 				}
 			}
 		}
@@ -623,6 +709,8 @@ void Game::mousePassiveMove(int _x, int _y)
 void Game::mouseMove(int x, int y)
 {
 	//std::cout << "Clicked x: " << x << " | y: " << y << std::endl;
+	mouseX = x;
+	mouseY = y;
 }
 
 void Game::SpecialDown(int key, int x, int y)
@@ -655,7 +743,7 @@ void Game::HoverMenuButton(int _x, int _y)
 
 void Game::ClickMenuButton(int x, int y)
 {
-	audioSys->playMenuClick();
+	//audioSys->playMenuClick();
 	switch (currentGameState)
 	{
 	case 0:	// GAME_SCENE

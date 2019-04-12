@@ -118,7 +118,7 @@ protected:
 
 	ShaderLoader * shaderLoader;
 
-	Audio* audioSys;
+	//Audio* audioSys;
 
 	int width, height;
 
@@ -172,6 +172,7 @@ protected:
 	BasicShapes2DPhysics* crateBlock2;
 	BasicShapes2DPhysics* crateBlock3;
 	BasicShapes2DPhysics* crateBlock4;
+	BasicShapes2DPhysics* crateBlock5;
 
 	Quad* slingShot;
 
@@ -188,6 +189,10 @@ protected:
 	b2World* physicsWorld;
 	int velocityIterations;
 	int positionIterations;
+
+	b2RevoluteJointDef revJointDef;
+	b2RevoluteJoint* revJoint;
+	b2PulleyJoint* pulleyJoint;
 
 	float physicsDeltaT;
 
