@@ -101,7 +101,7 @@ Game::~Game()
 
 	delete camera;
 	delete background2D;
-
+	
 	delete physicsWorld;
 
 	//delete cube;
@@ -117,12 +117,6 @@ Game::~Game()
 		delete birdsVec.at(it);
 	}
 	birdsVec.clear();
-
-	for (int it = 0; it != firedBirds.size(); ++it)
-	{
-		delete firedBirds.at(it);
-	}
-	firedBirds.clear();
 
 	for (int it = 0; it != pigsVec.size(); ++it)
 	{
@@ -147,6 +141,7 @@ Game::~Game()
 
 void Game::init()
 {
+	std::cout << "INIT START" << std::endl;
 	previousTimeStamp = (GLfloat)glutGet(GLUT_ELAPSED_TIME);
 
 	ShaderLoader shaderLoader;
@@ -162,7 +157,7 @@ void Game::init()
 	CreateTextLabels();
 
 	//-- Default values for Physics ---------------------------
-	gravity = b2Vec2(0.0f, -9.8f);
+	gravity = b2Vec2(0.0f, -98.0f);
 	physicsWorld = new b2World(gravity);
 
 	velocityIterations = 8;
@@ -172,65 +167,25 @@ void Game::init()
 	textureDetails tempDetails;
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
 
-	ground = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	ground = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	ground->SetScale((float)SCR_WIDTH, 20.0f, 1.0f);
 	ground->SetPosition((float)CENTRE_X, 3.0f, 0.0f);
+	ground->GetPhysicsBody()->SetUserData(&ground);
 
-	leftBoundWall = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	leftBoundWall = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	leftBoundWall->SetScale(20.0f, 650.0f, 1.0f);
 	leftBoundWall->SetPosition(0.0f, (float)CENTRE_Y, 0.0f);
+	leftBoundWall->GetPhysicsBody()->SetUserData(&leftBoundWall);
 
-	holdingBlockBot = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	holdingBlockBot = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	holdingBlockBot->SetScale((float)SCR_WIDTH, 5.0f, 1.0f);
 	holdingBlockBot->SetPosition((float)CENTRE_X, (float)SCR_HEIGHT - 45.0f, 0.0f);
+	holdingBlockBot->GetPhysicsBody()->SetUserData(&holdingBlockBot);
 
-	holdingBlockRight = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	holdingBlockRight = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	holdingBlockRight->SetScale(10.0f, 50.0f, 1.0f);
 	holdingBlockRight->SetPosition((float)SCR_WIDTH - 5.0f, (float)SCR_HEIGHT - 25.0f, 0.0f);
-
-	for (int i = 0; i < 6; ++i)
-	{
-		if (i < 3)
-		{
-			switch (i)
-			{
-			case 0:
-				tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
-				break;
-			case 1:
-				tempDetails = CreateTexture("Resources/Textures/blueAngryBird.png");
-				break;
-			case 2:
-				tempDetails = CreateTexture("Resources/Textures/blackAngryBird.png");
-				break;
-			default:
-				tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
-				break;
-			}
-			birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE));
-		}
-		else
-		{
-			int random = rand() % 6 + 1;
-			if (random > 4)
-			{
-				tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
-			}
-			else if (random > 2)
-			{
-				tempDetails = CreateTexture("Resources/Textures/blueAngryBird.png");
-			}
-			else
-			{
-				tempDetails = CreateTexture("Resources/Textures/blackAngryBird.png");
-			}
-			birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE));
-		}
-		float rF = 10.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (30.0f - 10.0f)));
-		birdsVec.back()->SetRadius(rF);
-		birdsVec.back()->SetPosition(50.0f + (rF* 2.0f) * i, (float)SCR_HEIGHT, 0.0f);
-		birdsVec.back()->SetRestitution(0.25f);
-	}
+	holdingBlockRight->GetPhysicsBody()->SetUserData(&holdingBlockRight);
 
 	tempDetails = CreateTexture("Resources/Textures/angryBirdsSlingshot.png");
 	slingShot = new Quad(tempDetails.tex);
@@ -242,58 +197,77 @@ void Game::init()
 	{
 		if (i == 0)
 		{
-			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE));
+			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, ENEMY));
 			pigsVec.back()->SetRadius(18.0f);
 			pigsVec.back()->SetPosition((float)CENTRE_X - 70.0f + (35.0f * 2.0f) * i, 70.0f, 0.0f);
 			pigsVec.back()->SetFriction(1.0f);
+			pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
 		}
 		else
 		{
 
-			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE));
+			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
 			pigsVec.back()->SetRadius(25.0f);
 			pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+			pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
 		}
 	}
 
+	tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
+	birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, BIRD));
+	birdsVec.back()->SetRadius(10.0f);
+	birdsVec.back()->SetPosition(CENTRE_X, CENTRE_Y, 0);
+	birdsVec.back()->SetIsAlive(true);
+	birdsVec.back()->GetPhysicsBody()->SetUserData(&birdsVec.back());
+
 	tempDetails = CreateTexture("Resources/Textures/glassTexture.png");
-	glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	glassBlock1->SetScale(320.0f, 25.0f, 1.0f);
 	glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 88.0f, 0.0f);
 	glassBlock1->SetFriction(1.0f);
+	glassBlock1->GetPhysicsBody()->SetUserData(&glassBlock1);
 
-	glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	glassBlock2->SetScale(15.0f, 150.0f, 1.0f);
 	glassBlock2->SetPosition((float)CENTRE_X + 250.0f, 88.0f, 0.0f);
+	glassBlock2->GetPhysicsBody()->SetUserData(&glassBlock2);
 
-	glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	glassBlock3->SetScale(15.0f, 150.0f, 1.0f);
 	glassBlock3->SetPosition((float)CENTRE_X + 380.0f, 88.0f, 0.0f);
+	glassBlock3->GetPhysicsBody()->SetUserData(&glassBlock3);
 
-	glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	glassBlock4->SetScale(25.0f, 25.0f, 1.0f);
 	glassBlock4->SetPosition((float)CENTRE_X - 200.0f, 100.0f, 0.0f);
+	glassBlock4->GetPhysicsBody()->SetUserData(&glassBlock4);
 
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
-	crateBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	crateBlock1->SetScale(225.0f, 20.0f, 1.0f);
 	crateBlock1->SetPosition((float)CENTRE_X + 278.0f, 173.0f, 0.0f);
+	crateBlock1->GetPhysicsBody()->SetUserData(&crateBlock1);
 
-	crateBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, true);
+	crateBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	crateBlock2->SetScale(25.0f, 30.0f, 1.0f);
 	crateBlock2->SetPosition((float)CENTRE_X, (float)CENTRE_Y, 0.0f);
+	crateBlock2->GetPhysicsBody()->SetUserData(&crateBlock2);
 
-	crateBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	crateBlock3->SetScale(100.0f, 30.0f, 1.0f);
 	crateBlock3->SetPosition((float)CENTRE_X - 45.0f, (float)CENTRE_Y, 0.0f);
+	crateBlock3->GetPhysicsBody()->SetUserData(&crateBlock3);
 
-	crateBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	crateBlock4->SetScale(50.0f, 50.0f, 1.0f);
 	crateBlock4->SetPosition((float)CENTRE_X + 220.0f, 190.0f, 0.0f);
+	crateBlock4->GetPhysicsBody()->SetUserData(&crateBlock4);
 
-	crateBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE);
+	crateBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
 	crateBlock5->SetScale(70.0f, 80.0f, 1.0f);
 	crateBlock5->SetPosition((float)CENTRE_X - 8.0f, CENTRE_Y - 30.0f, 0.0f);
+	crateBlock5->GetPhysicsBody()->SetUserData(&crateBlock5);
+	
 
 	// Revolute Joint
 	revJointDef.Initialize(crateBlock2->GetPhysicsBody(), crateBlock3->GetPhysicsBody(), crateBlock2->GetPhysicsBody()->GetWorldCenter());
@@ -316,6 +290,9 @@ void Game::init()
 
 	revJoint = (b2RevoluteJoint*)physicsWorld->CreateJoint(&revJointDef);
 	//physicsCircle->SetDensity(1.0f);
+
+	physicsWorld->SetContactListener(&physicsWorldContactListener);
+	std::cout << "INIT DONE" << std::endl;
 }
 
 void Game::render()
@@ -420,36 +397,42 @@ void Game::update()
 
 		for (unsigned int i = 0; i < birdsVec.size(); i++)
 		{
-			birdsVec.at(i)->update();
-		}
-
-		for (unsigned int i = 0; i < firedBirds.size(); i++)
-		{
-			firedBirds.at(i)->update();
+			if (birdsVec.at(i) != nullptr)
+			{
+				birdsVec.at(i)->update(deltaTime);
+				if (birdsVec.at(i)->GetLifetime() <= 0.0f)
+				{
+					physicsWorld->DestroyBody(birdsVec.at(i)->GetPhysicsBody());
+					delete birdsVec.at(i);
+					birdsVec.at(i) = nullptr;
+				}
+			}
 		}
 
 		for (unsigned int i = 0; i < pigsVec.size(); i++)
 		{
-			pigsVec.at(i)->update();
+			pigsVec.at(i)->update(deltaTime);
 		}
 
 		slingShot->update();
 
-		leftBoundWall->update();
-		ground->update();
-		holdingBlockBot->update();
-		holdingBlockRight->update();
+		leftBoundWall->update(deltaTime);
+		ground->update(deltaTime);
+		holdingBlockBot->update(deltaTime);
+		holdingBlockRight->update(deltaTime);
 
-		glassBlock1->update();
-		glassBlock2->update();
-		glassBlock3->update();
-		glassBlock4->update();
+		glassBlock1->update(deltaTime);
+		glassBlock2->update(deltaTime);
+		glassBlock3->update(deltaTime);
+		glassBlock4->update(deltaTime);
 
-		crateBlock1->update();
-		crateBlock2->update();
-		crateBlock3->update();
-		crateBlock4->update();
-		crateBlock5->update();
+		crateBlock1->update(deltaTime);
+		crateBlock2->update(deltaTime);
+		crateBlock3->update(deltaTime);
+		crateBlock4->update(deltaTime);
+		crateBlock5->update(deltaTime);
+
+		EvaluatePhysicsWorldContact();
 		break;
 
 	default:
@@ -511,12 +494,10 @@ void Game::RenderGameScene()
 
 	for (unsigned int i = 0; i < birdsVec.size(); i++)
 	{
-		birdsVec.at(i)->render(program);
-	}
-
-	for (unsigned int i = 0; i < firedBirds.size(); i++)
-	{
-		firedBirds.at(i)->render(program);
+		if (birdsVec.at(i) != nullptr)
+		{
+			birdsVec.at(i)->render(program);
+		}
 	}
 
 	for (unsigned int i = 0; i < pigsVec.size(); i++)
@@ -606,39 +587,68 @@ void Game::processInput()
 		}
 
 		// Check mouse click
-		//if (Input::GetMouseState(MOUSE_LEFT) == DOWN_FIRST)
-		//{
-		//	// Mouse picking code example from previous working code
-		//	// If "forwardButton" is clicked
-		//	/*if (UpdateMousePicking(forwardButton))
-		//	{
-		//		// This moved the camera forwards some
-		//		camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f));
-		//		// I did not use deltaTime here. This line should have been:
-		//		camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f * deltaTime));
-		//		// Albeit, it would have moved slower, but the value is only that low because I did not use deltaTime
-		//	}*/
-		//	if (!birdsVec.empty())
-		//	{
-		//		firedBirds.push_back(birdsVec.back());
-		//		birdsVec.pop_back();
-		//	}
-
-		//}
+		if (Input::GetMouseState(MOUSE_LEFT) == DOWN_FIRST)
+		{
+			// Mouse picking code example from previous working code
+			// If "forwardButton" is clicked
+			/*if (UpdateMousePicking(forwardButton))
+			{
+				// This moved the camera forwards some
+				camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f));
+				// I did not use deltaTime here. This line should have been:
+				camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f * deltaTime));
+				// Albeit, it would have moved slower, but the value is only that low because I did not use deltaTime
+			}*/
+			
+		}
 		if (Input::GetMouseState(MOUSE_LEFT) == DOWN)
 		{
-			//if ((float)mouseX < 250.0f)
-			//{
+			if ((float)mouseX < 250.0f && (float)mouseY > 480.0f)
+			{
 				//std::cout << mouseX << std::endl;
 				//std::cout << mouseY << std::endl;
-				if (currentAmmo > 0)
+				//if (currentAmmo > 0)
+				//{
+					if (!newBirdSpawned)
+					{
+						newBirdSpawned = true;
+						textureDetails tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
+						birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, BIRD));
+						birdsVec.back()->SetRadius(10.0f);
+						birdsVec.back()->SetPosition(CENTRE_X, CENTRE_Y, 0);
+						birdsVec.back()->GetPhysicsBody()->SetBullet(true);
+					}
+				//}
+				if (birdsVec.size() != 0)
 				{
-					std::cout << "setting position of bird at back of birds vector" << std::endl;
 					birdsVec.back()->SetPosition((float)mouseX, (float)SCR_HEIGHT - (float)mouseY, 0.0f);
+
+					float xForce, yForce;
+					b2Vec2 mouseDistanceFromSling;
+					mouseDistanceFromSling.x = slingShot->GetXPosition() - mouseX;
+					mouseDistanceFromSling.y = ((float)SCR_HEIGHT - mouseY) - ((float)SCR_HEIGHT - slingShot->GetYPosition());
+					std::cout << "Slingshot Y Position: " << slingShot->GetYPosition() << std::endl;
+					std::cout << "Slingshot X Position: " << slingShot->GetXPosition() << std::endl;
+					xForce = (slingShot->GetXPosition() - mouseX) * 2500.0f * mouseDistanceFromSling.x;
+					yForce = (((float)SCR_HEIGHT - mouseY) - (((float)SCR_HEIGHT - slingShot->GetYPosition() /*+ (slingShot->GetYScale() * 0.5f)*/))) * 1000.0f * mouseDistanceFromSling.y;
+					birdsVec.back()->GetPhysicsBody()->ApplyForce(b2Vec2(xForce, yForce), birdsVec.back()->GetPhysicsBody()->GetWorldCenter(), true);
 				}
-			//}
+			}
 		}
-		if (Input::GetMouseState(MOUSE_LEFT) == UP_FIRST)
+		if (Input::GetMouseState(MOUSE_LEFT) == UP)
+		{
+			if (newBirdSpawned)
+			{
+				newBirdSpawned = false;
+				currentAmmo--;
+
+				if (birdsVec.size() != 0)
+				{
+					birdsVec.back()->SetIsAlive(true);
+				}
+			}
+		}
+		/*if (Input::GetMouseState(MOUSE_LEFT) == UP_FIRST)
 		{
 			if ((float)mouseX < 250.0f)
 			{
@@ -646,16 +656,15 @@ void Game::processInput()
 				{
 					currentAmmo--;
 					std::cout << "back bird pushed into fired vector and popped out birds vector" << std::endl;
-					firedBirds.push_back(birdsVec.back());
-					birdsVec.pop_back();
-					if (!firedBirds.empty())
+
+					std::cout << "force applied to bird at back of fired birds vector" << std::endl;
+					if (birdsVec.size() != 0)
 					{
-						std::cout << "force applied to bird at back of fired birds vector" << std::endl;
-						firedBirds.back()->GetPhysicsBody()->ApplyForce(b2Vec2(mouseX - slingShot->GetXPosition(), ((float)SCR_HEIGHT - mouseY) - (slingShot->GetYPosition() + (slingShot->GetYScale()*0.5f))), firedBirds.back()->GetPhysicsBody()->GetWorldCenter(), true);
+						birdsVec.back()->GetPhysicsBody()->ApplyForce(b2Vec2((mouseX - slingShot->GetXPosition()) * 100.0f, (((float)SCR_HEIGHT - mouseY) - (slingShot->GetYPosition() + (slingShot->GetYScale() * 0.5f))) * 100.0f), birdsVec.back()->GetPhysicsBody()->GetWorldCenter(), true);
 					}
 				}
 			}
-		}
+		}*/
 		
 		break;
 	default:
@@ -853,4 +862,28 @@ void Game::Restart()
 	outlineObjects = false;
 	wireframeOn = false;
 	scissorTestOn = false;
+}
+
+void Game::EvaluatePhysicsWorldContact()
+{
+	/*for (b2Contact* contact = physicsWorld->GetContactList(); contact; contact = contact->GetNext())
+	{
+		BasicShapes2DPhysics* userDataA = (BasicShapes2DPhysics*)contact->GetFixtureA()->GetBody()->GetUserData();
+		BasicShapes2DPhysics* userDataB = (BasicShapes2DPhysics*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+		if (contact->IsTouching())
+		{
+			switch (userDataA->GetObjectType())
+			{
+			case ENEMY:
+				if (userDataB->GetObjectType() == BIRD)
+				{
+					std::cout << "Bird touched Pig; vice versa" << std::endl;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}*/
 }

@@ -24,6 +24,7 @@
 #include <iostream>
 
 #include "ModelMesh.h"
+#include "Physics2DWorldContactListener.h"
 
 class Camera;
 class Player;
@@ -103,6 +104,8 @@ public:
 
 	void Restart();
 
+	void EvaluatePhysicsWorldContact();
+
 protected:
 	GLuint program;
 	GLuint cubemapProgram;
@@ -160,7 +163,6 @@ protected:
 	BasicShapes2DPhysics* holdingBlockBot;
 	BasicShapes2DPhysics* holdingBlockRight;
 	std::vector<BasicShapes2DPhysics*> birdsVec;
-	std::vector<BasicShapes2DPhysics*> firedBirds;
 	std::vector<BasicShapes2DPhysics*> pigsVec;
 
 	BasicShapes2DPhysics* glassBlock1;
@@ -175,6 +177,7 @@ protected:
 	BasicShapes2DPhysics* crateBlock5;
 
 	Quad* slingShot;
+	bool newBirdSpawned = false;
 
 	// Score / Lives
 	TextLabel* ammoLeft;
@@ -187,6 +190,7 @@ protected:
 	// PHYSICS
 	b2Vec2 gravity;
 	b2World* physicsWorld;
+	Physics2DWorldContactListener physicsWorldContactListener;
 	int velocityIterations;
 	int positionIterations;
 

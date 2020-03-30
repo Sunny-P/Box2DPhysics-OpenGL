@@ -2,9 +2,13 @@
 #include "BasicShapes2DPhysics.h"
 #include "texture.h"
 
-BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, Shape shapeType, bool isStaticBody)
+BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, Shape shapeType, ObjectType objectType, bool isStaticBody)
 {
 	isActive = true;
+	isAlive = false;
+	lifetime = 7.0f;
+
+	this->objectType = objectType;
 
 	tex = _tex;
 
@@ -56,6 +60,9 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 	//fixture = body->CreateFixture(&fixtureDef);
 	body->CreateFixture(&fixtureDef);
 
+	/*physicsUserData.objectType = objectType;
+	body->SetUserData(&physicsUserData);*/
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
@@ -96,7 +103,7 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 
 BasicShapes2DPhysics::~BasicShapes2DPhysics()
 {
-
+	
 }
 
 void BasicShapes2DPhysics::render(GLuint _program)
@@ -126,14 +133,16 @@ void BasicShapes2DPhysics::render(GLuint _program)
 	}
 }
 
-void BasicShapes2DPhysics::update()
+void BasicShapes2DPhysics::update(float deltaTime)
 {
 	if (isActive)
 	{
 		Update2DRotation();
 		UpdatePosition();
-
+		EvaluateLifetime(deltaTime);
 		UpdateModelMatrix();
+
+		EvaluateContact();
 	}
 }
 
@@ -200,7 +209,6 @@ void BasicShapes2DPhysics::SetPosition(float _XPos, float _YPos, float _ZPos)
 	//bodyDef.position.Set((float32)position.x, (float32)position.y);
 	//body = world->CreateBody(&bodyDef);
 	body->SetTransform(b2Vec2(position.x, position.y), body->GetAngle());
-
 	//body->DestroyFixture(fixture);
 	/*if (physicsShapeType == SQUARE)
 	{
@@ -322,6 +330,58 @@ b2Body * BasicShapes2DPhysics::GetPhysicsBody() const
 Shape BasicShapes2DPhysics::GetShapeType() const
 {
 	return physicsShapeType;
+}
+
+ObjectType BasicShapes2DPhysics::GetObjectType() const
+{
+	return objectType;
+}
+
+void BasicShapes2DPhysics::EvaluateContact()
+{
+	//for (b2ContactEdge* c = body->GetContactList(); c; c = c->next)
+	//{
+	//	Physics2DUserData* otherData = (Physics2DUserData*)c->other->GetUserData();
+	//	b2Contact* contact = c->contact;
+	//	if (contact->IsTouching())
+	//	{
+	//		switch (objectType)
+	//		{
+	//		case BIRD:
+	//			if (otherData->objectType == ENEMY)
+	//			{
+	//				//Destroy the 'ENEMY' body
+	//				world->DestroyBody(c->other);
+	//			}
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//	}
+	//}
+}
+
+void BasicShapes2DPhysics::EvaluateLifetime(float _deltaTime)
+{
+	if (isAlive)
+	{
+		lifetime -= _deltaTime;
+	}
+}
+
+float BasicShapes2DPhysics::GetLifetime() const
+{
+	return lifetime;
+}
+
+void BasicShapes2DPhysics::SetIsAlive(bool value)
+{
+	isAlive = value;
+}
+
+bool BasicShapes2DPhysics::GetIsAlive() const
+{
+	return isAlive;
 }
 
 bool BasicShapes2DPhysics::GetIsActive() const

@@ -165,7 +165,7 @@ void mousePassiveMove(int x, int y)
 
 void mouseMove(int x, int y)
 {
-	//game->mouseMove(x, y);
+	game->mouseMove(x, y);
 	Input::MouseActiveMove(x, y);
 }
 

@@ -15,13 +15,20 @@ enum Shape {
 	CIRCLE
 };
 
+enum ObjectType {
+	BIRD,
+	ENEMY,
+	DESTRUCTIBLE_OBJECT,
+	WORLD_OBJECT
+};
+
 class BasicShapes2DPhysics {
 public:
-	BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, Shape shapeType, bool isStaticBody = false);
+	BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, Shape shapeType, ObjectType objectType, bool isStaticBody = false);
 	~BasicShapes2DPhysics();
 
 	void render(GLuint _program);
-	void update();
+	void update(float deltaTime);
 
 	glm::mat4 GetModelMatrix();
 
@@ -56,6 +63,13 @@ public:
 
 	b2Body* GetPhysicsBody() const;
 	Shape GetShapeType() const;
+	ObjectType GetObjectType() const;
+
+	void EvaluateLifetime(float _deltaTime);
+	float GetLifetime() const;
+
+	void SetIsAlive(bool value);
+	bool GetIsAlive() const;
 
 	bool GetIsActive() const;
 	void SetIsActive(bool _isActive);
@@ -64,6 +78,7 @@ private:
 	// Updates position based on its physics body
 	void UpdatePosition();
 	void Update2DRotation();
+	void EvaluateContact();
 
 protected:
 	bool isActive;
@@ -78,6 +93,10 @@ protected:
 	b2World* world;
 
 	Shape physicsShapeType;
+	ObjectType objectType;
+
+	bool isAlive;
+	float lifetime;
 
 	float32 density;
 	float32 friction;
