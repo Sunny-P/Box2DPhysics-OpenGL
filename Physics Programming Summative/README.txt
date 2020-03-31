@@ -1,10 +1,9 @@
-The Release executable is found within the Release folder.
-
 Press the ESC key to quit, or close the window.
 
-Left clicking with the mouse will teleport a bird to your cursor location, and it will continue moving with it's motion.
+Left Clicking in the area left of the slingshot will spawn a bird.
+The force applied to the bird is intended to be determined based on mousePosition->Slingshot position. It needs tweaking.
 
-Joints Implemented:
-Pulley Joint - Two blocks are connected via a pulley system, one glass block and a crate block.
+Joint Applied:
+Revolute Joint
 
-Revolute Joint - There is a revolute joint connecting a dynamic object to a static object.
+Contributors: Sunny Peebles, Jasmine Rivers

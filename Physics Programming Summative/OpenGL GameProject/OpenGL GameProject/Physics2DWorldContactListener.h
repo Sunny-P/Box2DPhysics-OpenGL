@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <string.h>
 #include "Dependencies/Box2D/Dynamics/b2WorldCallbacks.h"
 #include "BasicShapes2DPhysics.h"
 
@@ -23,17 +24,13 @@ class Physics2DWorldContactListener :
 
 	void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 	{
-		// TODO: GET UserData properly. User data not being got proper
-		BasicShapes2DPhysics* shapeA = nullptr;
-		shapeA = (BasicShapes2DPhysics*)contact->GetFixtureA()->GetBody()->GetUserData();
-		BasicShapes2DPhysics* shapeB = nullptr;
-		shapeB = (BasicShapes2DPhysics*)contact->GetFixtureB()->GetBody()->GetUserData();
-
-		if (shapeA != nullptr)
+		// Enemy is getting hit by another physics body
+		if (contact->GetFixtureA()->GetBody()->GetUserData() == "enemy")
 		{
-			if (shapeA->GetObjectType() == ENEMY)
+			if (impulse->normalImpulses[0] >= 150.0f)
 			{
-				std::cout << "PostSolve callback::Enemy UserData got" << std::endl;
+				//contact->GetFixtureB()->GetBody()->GetWorld()->DestroyBody(contact->GetFixtureA()->GetBody());
+				std::cout << "Pig Died" << std::endl;
 			}
 		}
 	}

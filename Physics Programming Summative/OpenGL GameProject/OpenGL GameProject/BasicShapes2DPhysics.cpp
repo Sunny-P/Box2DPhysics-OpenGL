@@ -41,6 +41,7 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 	dynamicBox.SetAsBox((float32)(scale.x * 0.5f), (float32)(scale.z * 0.5f));
 	physicsCircle.m_p.Set((float32)0.0f, (float32)0.0f);
 	physicsCircle.m_radius = (float32)(scale.x * 0.5f);
+
 	if (physicsShapeType == SQUARE)
 	{
 		fixtureDef.shape = &dynamicBox;
@@ -62,6 +63,23 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 
 	/*physicsUserData.objectType = objectType;
 	body->SetUserData(&physicsUserData);*/
+	switch (this->objectType)
+	{
+	case BIRD:
+		body->SetUserData("bird");
+		break;
+	case ENEMY:
+		body->SetUserData("enemy");
+		break;
+	case WORLD_OBJECT:
+		body->SetUserData("worldObject");
+		break;
+	case DESTRUCTIBLE_OBJECT:
+		body->SetUserData("destructibleObject");
+		break;
+	default:
+		break;
+	}
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
