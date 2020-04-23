@@ -67,6 +67,7 @@ public:
 
 	void EvaluateLifetime(float _deltaTime);
 	float GetLifetime() const;
+	void SetLifetime(float _lifetime);
 
 	void SetIsAlive(bool value);
 	bool GetIsAlive() const;

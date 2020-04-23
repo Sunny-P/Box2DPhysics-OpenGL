@@ -52,7 +52,7 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 	}
 
 	density = 1.0f;
-	friction = 0.3f;
+	friction = 1.0f;
 	restitution = 0.0f;
 
 	fixtureDef.density = density;
@@ -61,21 +61,29 @@ BasicShapes2DPhysics::BasicShapes2DPhysics(GLuint _tex, b2World* physicsWorld, S
 	//fixture = body->CreateFixture(&fixtureDef);
 	body->CreateFixture(&fixtureDef);
 
-	/*physicsUserData.objectType = objectType;
-	body->SetUserData(&physicsUserData);*/
+	b2MassData originalMassData;
 	switch (this->objectType)
 	{
 	case BIRD:
-		body->SetUserData("bird");
+		body->SetUserData(this);
 		break;
 	case ENEMY:
-		body->SetUserData("enemy");
+		body->SetUserData(this);
 		break;
 	case WORLD_OBJECT:
-		body->SetUserData("worldObject");
+		body->SetUserData(this);
+
+		body->GetMassData(&originalMassData);
+		originalMassData.mass *= 0.25f;
+		body->SetMassData(&originalMassData);
+
 		break;
 	case DESTRUCTIBLE_OBJECT:
-		body->SetUserData("destructibleObject");
+		body->SetUserData(this);
+
+		body->GetMassData(&originalMassData);
+		originalMassData.mass *= 0.1f;
+		body->SetMassData(&originalMassData);
 		break;
 	default:
 		break;
@@ -392,6 +400,11 @@ float BasicShapes2DPhysics::GetLifetime() const
 	return lifetime;
 }
 
+void BasicShapes2DPhysics::SetLifetime(float _lifetime)
+{
+	lifetime = _lifetime;
+}
+
 void BasicShapes2DPhysics::SetIsAlive(bool value)
 {
 	isAlive = value;
@@ -420,7 +433,10 @@ void BasicShapes2DPhysics::UpdatePosition()
 
 void BasicShapes2DPhysics::Update2DRotation()
 {
-	zRotationAngle = glm::degrees(body->GetAngle());
+	if (body != nullptr)
+	{
+		zRotationAngle = glm::degrees(body->GetAngle());
+	}
 }
 
 void BasicShapes2DPhysics::UpdateModelMatrix()

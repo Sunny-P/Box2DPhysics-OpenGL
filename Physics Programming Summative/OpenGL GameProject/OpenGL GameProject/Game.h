@@ -142,6 +142,8 @@ protected:
 
 	// GAMESTATE
 	GameState currentGameState;
+	float shootDelay;
+	float currentShootDelay;
 
 	// SKYBOX
 	CubeMap* skybox;

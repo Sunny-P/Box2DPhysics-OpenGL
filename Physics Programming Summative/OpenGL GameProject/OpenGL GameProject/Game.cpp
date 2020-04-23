@@ -57,7 +57,7 @@ Game::Game(int _width, int _height)
 	PopulateCubemapFilePathVec();
 
 	textureDetails tempDetails;
-	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
+	//tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
 	//cube = new CubeMesh(tempDetails.tex);
 	/*cube->SetScale(1.0f, 7.5f, 10.0f);
 	cube->IncrementPositionVec(glm::vec3(50.0f, 3.25f, 0.0f));*/
@@ -73,13 +73,15 @@ Game::Game(int _width, int _height)
 	wireframeOn = false;
 	scissorTestOn = false;
 
-	tempDetails = CreateTexture("Resources/Textures/mountainsSky.jpg");
+	tempDetails = CreateTexture("Resources/Textures/abBG.png");
 	background2D = new Quad(tempDetails.tex);
-	background2D->SetScale(2000.0f, 100.0f, 1000.0f);
-	background2D->IncrementPositionVec(glm::vec3(CENTRE_X, CENTRE_Y - 50.0f, -5000.0f));
+	background2D->SetScale(1152.0f, 1.0f, 648.0f);
+	background2D->IncrementPositionVec(glm::vec3(CENTRE_X, CENTRE_Y - 0.0f, -5000.0f));
 	
 	startingAmmo = 6;
 	currentAmmo = startingAmmo;
+	shootDelay = 2.0f;
+	currentShootDelay = 0.0f;
 	//keyDelayWaitTime = 0.1f;
 }
 
@@ -124,10 +126,10 @@ Game::~Game()
 	}
 	pigsVec.clear();
 
-	/*delete glassBlock1;
+	delete glassBlock1;
 	delete glassBlock2;
 	delete glassBlock3;
-	delete glassBlock4;*/
+	delete glassBlock4;
 
 	delete crateBlock1;
 	delete crateBlock2;
@@ -199,7 +201,7 @@ void Game::init()
 		{
 			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, ENEMY));
 			pigsVec.back()->SetRadius(18.0f);
-			pigsVec.back()->SetPosition((float)CENTRE_X - 70.0f + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+			pigsVec.back()->SetPosition((float)CENTRE_X - 70.0f + (35.0f * 2.0f) * i, 40.0f, 0.0f);
 			pigsVec.back()->SetFriction(1.0f);
 			//pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
 		}
@@ -208,32 +210,28 @@ void Game::init()
 
 			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
 			pigsVec.back()->SetRadius(25.0f);
-			pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 70.0f, 0.0f);
+			pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 40.0f, 0.0f);
 			//pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
 		}
 	}
 
-	//tempDetails = CreateTexture("Resources/Textures/glassTexture.png");
-	//glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	//glassBlock1->SetScale(320.0f, 25.0f, 1.0f);
-	//glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 88.0f, 0.0f);
+	tempDetails = CreateTexture("Resources/Textures/GlassBlock.png");
+	glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	glassBlock1->SetScale(320.0f, 25.0f, 1.0f);
+	glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 88.0f, 0.0f);
 	//glassBlock1->SetFriction(1.0f);
-	////glassBlock1->GetPhysicsBody()->SetUserData(&glassBlock1);
 
-	//glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	//glassBlock2->SetScale(15.0f, 150.0f, 1.0f);
-	//glassBlock2->SetPosition((float)CENTRE_X + 250.0f, 88.0f, 0.0f);
-	////glassBlock2->GetPhysicsBody()->SetUserData(&glassBlock2);
+	glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	glassBlock2->SetScale(15.0f, 150.0f, 1.0f);
+	glassBlock2->SetPosition((float)CENTRE_X + 250.0f, 88.0f, 0.0f);
 
-	//glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	//glassBlock3->SetScale(15.0f, 150.0f, 1.0f);
-	//glassBlock3->SetPosition((float)CENTRE_X + 380.0f, 88.0f, 0.0f);
-	////glassBlock3->GetPhysicsBody()->SetUserData(&glassBlock3);
+	glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	glassBlock3->SetScale(15.0f, 150.0f, 1.0f);
+	glassBlock3->SetPosition((float)CENTRE_X + 380.0f, 88.0f, 0.0f);
 
-	//glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	//glassBlock4->SetScale(25.0f, 25.0f, 1.0f);
-	//glassBlock4->SetPosition((float)CENTRE_X - 200.0f, 100.0f, 0.0f);
-	//glassBlock4->GetPhysicsBody()->SetUserData(&glassBlock4);
+	glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	glassBlock4->SetScale(25.0f, 25.0f, 1.0f);
+	glassBlock4->SetPosition((float)CENTRE_X - 200.0f, 100.0f, 0.0f);
 
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
 	crateBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
@@ -299,15 +297,27 @@ void Game::render()
 	case DEFAULT:
 		slingShot->render(program);
 
-		ground->render(program);
-		leftBoundWall->render(program);
+		//ground->render(program);
+		//leftBoundWall->render(program);
 		/*holdingBlockBot->render(program);
 		holdingBlockRight->render(program);*/
 
-		/*glassBlock1->render(program);
-		glassBlock2->render(program);
-		glassBlock3->render(program);
-		glassBlock4->render(program);*/
+		if (glassBlock1 != nullptr)
+		{
+			glassBlock1->render(program);
+		}
+		if (glassBlock2 != nullptr)
+		{
+			glassBlock2->render(program);
+		}
+		if (glassBlock3 != nullptr)
+		{
+			glassBlock3->render(program);
+		}
+		if (glassBlock4 != nullptr)
+		{
+			glassBlock4->render(program);
+		}
 
 		crateBlock1->render(program);
 		crateBlock2->render(program);
@@ -388,6 +398,11 @@ void Game::update()
 	case DEFAULT:
 		physicsWorld->Step((float32)physicsDeltaT, (int32)velocityIterations, (int32)positionIterations);
 
+		if (currentShootDelay > 0.0f)
+		{
+			currentShootDelay -= deltaTime;
+		}
+
 		for (unsigned int i = 0; i < birdsVec.size(); i++)
 		{
 			if (birdsVec.at(i) != nullptr)
@@ -406,14 +421,14 @@ void Game::update()
 		{
 			if (pigsVec.at(i) != nullptr)
 			{
-				if (pigsVec.at(i)->GetPhysicsBody() == nullptr)
+				pigsVec.at(i)->update(deltaTime);
+
+				if (pigsVec.at(i)->GetLifetime() <= 0.0f)
 				{
+					physicsWorld->DestroyBody(pigsVec.at(i)->GetPhysicsBody());
 					delete pigsVec.at(i);
 					pigsVec.at(i) = nullptr;
-					continue;
 				}
-
-				pigsVec.at(i)->update(deltaTime);
 			}
 		}
 
@@ -424,10 +439,46 @@ void Game::update()
 		/*holdingBlockBot->update(deltaTime);
 		holdingBlockRight->update(deltaTime);*/
 
-		/*glassBlock1->update(deltaTime);
-		glassBlock2->update(deltaTime);
-		glassBlock3->update(deltaTime);
-		glassBlock4->update(deltaTime);*/
+		if (glassBlock1 != nullptr)
+		{
+			glassBlock1->update(deltaTime);
+			if (glassBlock1->GetLifetime() <= 0.0f)
+			{
+				physicsWorld->DestroyBody(glassBlock1->GetPhysicsBody());
+				delete glassBlock1;
+				glassBlock1 = nullptr;
+			}
+		}
+		if (glassBlock2 != nullptr)
+		{
+			glassBlock2->update(deltaTime);
+			if (glassBlock2->GetLifetime() <= 0.0f)
+			{
+				physicsWorld->DestroyBody(glassBlock2->GetPhysicsBody());
+				delete glassBlock2;
+				glassBlock2 = nullptr;
+			}
+		}
+		if (glassBlock3 != nullptr)
+		{
+			glassBlock3->update(deltaTime);
+			if (glassBlock3->GetLifetime() <= 0.0f)
+			{
+				physicsWorld->DestroyBody(glassBlock3->GetPhysicsBody());
+				delete glassBlock3;
+				glassBlock3 = nullptr;
+			}
+		}
+		if (glassBlock4 != nullptr)
+		{
+			glassBlock4->update(deltaTime);
+			if (glassBlock4->GetLifetime() <= 0.0f)
+			{
+				physicsWorld->DestroyBody(glassBlock4->GetPhysicsBody());
+				delete glassBlock4;
+				glassBlock4 = nullptr;
+			}
+		}
 
 		crateBlock1->update(deltaTime);
 		crateBlock2->update(deltaTime);
@@ -505,7 +556,10 @@ void Game::RenderGameScene()
 
 	for (unsigned int i = 0; i < pigsVec.size(); i++)
 	{
-		pigsVec.at(i)->render(program);
+		if (pigsVec.at(i) != nullptr)
+		{
+			pigsVec.at(i)->render(program);
+		}
 	}
 }
 
@@ -602,7 +656,6 @@ void Game::processInput()
 				camera->SetCamPos(camera->GetCamPos() + glm::vec3(0.0f, 0.0f, 0.25f * deltaTime));
 				// Albeit, it would have moved slower, but the value is only that low because I did not use deltaTime
 			}*/
-			
 		}
 		if (Input::GetMouseState(MOUSE_LEFT) == DOWN)
 		{
@@ -610,32 +663,32 @@ void Game::processInput()
 			{
 				//std::cout << mouseX << std::endl;
 				//std::cout << mouseY << std::endl;
-				//if (currentAmmo > 0)
-				//{
-					if (!newBirdSpawned)
-					{
-						newBirdSpawned = true;
-						textureDetails tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
-						birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, BIRD));
-						birdsVec.back()->SetRadius(10.0f);
-						birdsVec.back()->SetPosition(CENTRE_X, CENTRE_Y, 0);
-						birdsVec.back()->GetPhysicsBody()->SetBullet(true);
-					}
-				//}
-				if (birdsVec.size() != 0)
+				if (currentAmmo > -999)
 				{
-					birdsVec.back()->SetPosition((float)mouseX, (float)SCR_HEIGHT - (float)mouseY, 0.0f);
+					if (currentShootDelay <= 0.0f)
+					{
+						if (!newBirdSpawned)
+						{
+							newBirdSpawned = true;
+							textureDetails tempDetails = CreateTexture("Resources/Textures/redAngryBird.png");
+							birdsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, BIRD));
+							birdsVec.back()->SetRadius(10.0f);
+							birdsVec.back()->SetPosition(CENTRE_X, CENTRE_Y, 0);
+							birdsVec.back()->GetPhysicsBody()->SetBullet(true);
+						}
 
-					float xForce, yForce;
-					b2Vec2 mouseDistanceFromSling;
-					mouseDistanceFromSling.x = slingShot->GetXPosition() - mouseX;
-					mouseDistanceFromSling.y = ((float)SCR_HEIGHT - mouseY) - ((float)SCR_HEIGHT - slingShot->GetYPosition());
-					std::cout << "Slingshot Y Position: " << slingShot->GetYPosition() << std::endl;
-					std::cout << "Slingshot X Position: " << slingShot->GetXPosition() << std::endl;
-					xForce = (slingShot->GetXPosition() - mouseX) * 2500.0f * mouseDistanceFromSling.x;
-					yForce = (((float)SCR_HEIGHT - mouseY) - (((float)SCR_HEIGHT - slingShot->GetYPosition() /*+ (slingShot->GetYScale() * 0.5f)*/))) * 1000.0f * mouseDistanceFromSling.y;
-					birdsVec.back()->GetPhysicsBody()->ApplyForce(b2Vec2(xForce, yForce), birdsVec.back()->GetPhysicsBody()->GetWorldCenter(), true);
-					//birdsVec.back()->GetPhysicsBody()->ApplyLinearImpulse(b2Vec2(xForce, yForce), b2Vec2(0, 0), true);
+						if (birdsVec.size() != 0)
+						{
+							if (birdsVec.back() != nullptr)
+							{
+								birdsVec.back()->SetPosition((float)mouseX, (float)SCR_HEIGHT - (float)mouseY, 0.0f);
+
+								
+								//birdsVec.back()->GetPhysicsBody()->ApplyForce(b2Vec2(xForce, yForce), birdsVec.back()->GetPhysicsBody()->GetWorldCenter(), true);
+								
+							}
+						}
+					}
 				}
 			}
 		}
@@ -646,9 +699,40 @@ void Game::processInput()
 				newBirdSpawned = false;
 				currentAmmo--;
 
+				if (currentShootDelay <= 0.0f)
+				{
+					currentShootDelay = shootDelay;
+				}
+
 				if (birdsVec.size() != 0)
 				{
-					birdsVec.back()->SetIsAlive(true);
+					if (birdsVec.back() != nullptr)
+					{
+						//float xForce, yForce;
+						b2Vec2 slingshotForce;
+						slingshotForce.x = slingShot->GetXPosition() - mouseX;
+						//mouseDistanceFromSling.y = ((float)SCR_HEIGHT - mouseY) - ((float)SCR_HEIGHT - slingShot->GetYPosition());
+						slingshotForce.y = (slingShot->GetYPosition() + (slingShot->GetYScale() * 0.5f)) - ((float)SCR_HEIGHT - mouseY);
+
+						//std::cout << "Slingshot Y Position: " << slingShot->GetYPosition() << std::endl;
+						//std::cout << "MouseY: " << ((float)SCR_HEIGHT - mouseY) << std::endl;
+						//std::cout << "Slingshot X Position: " << slingShot->GetXPosition() << std::endl;
+
+						//xForce = (slingShot->GetXPosition() - mouseX) * 2500.0f * mouseDistanceFromSling.x;
+						//yForce = (((float)SCR_HEIGHT - mouseY) - (((float)SCR_HEIGHT - slingShot->GetYPosition() /*+ (slingShot->GetYScale() * 0.5f)*/))) * 1000.0f * mouseDistanceFromSling.y;
+						slingshotForce.x *= 2000.0f;
+						slingshotForce.y *= 4000.0f;
+
+						//std::cout << "Mouse.y: " << (float)SCR_HEIGHT - mouseY << std::endl;
+
+						b2MassData birdMass;
+						birdsVec.back()->GetPhysicsBody()->GetMassData(&birdMass);
+						
+						birdsVec.back()->GetPhysicsBody()->ApplyLinearImpulse(slingshotForce, birdsVec.back()->GetPhysicsBody()->GetWorldCenter(), true);
+						birdsVec.back()->SetIsAlive(true);
+
+						//birdsVec.back()->GetPhysicsBody()->SetAngularVelocity(slingshotForce.Length());
+					}
 				}
 			}
 		}
