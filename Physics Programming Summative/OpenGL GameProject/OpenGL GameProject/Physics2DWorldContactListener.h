@@ -59,7 +59,7 @@ class Physics2DWorldContactListener :
 		{
 			if (userDataB->GetObjectType() == 0)
 			{
-				if (impulse->normalImpulses[0] >= 45000.0f)
+				if (impulse->normalImpulses[0] >= 30000.0f)
 				{
 					userDataA->SetLifetime(0.0f);
 				}
@@ -86,7 +86,7 @@ class Physics2DWorldContactListener :
 		{
 			if (userDataA->GetObjectType() == 0)
 			{
-				if (impulse->normalImpulses[0] >= 45000.0f)
+				if (impulse->normalImpulses[0] >= 30000.0f)
 				{
 					
 					userDataB->SetLifetime(0.0f);

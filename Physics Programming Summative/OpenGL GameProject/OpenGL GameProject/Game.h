@@ -103,6 +103,8 @@ public:
 	bool UpdateMousePicking(T objectToCheckClicked);
 
 	void Restart();
+	void CleanupLevel();
+	void GenerateLevel();
 
 	void EvaluatePhysicsWorldContact();
 
@@ -167,7 +169,9 @@ protected:
 	std::vector<BasicShapes2DPhysics*> birdsVec;
 	std::vector<BasicShapes2DPhysics*> pigsVec;
 
-	BasicShapes2DPhysics* glassBlock1;
+	std::vector<BasicShapes2DPhysics*> levelBlocks;
+
+	/*BasicShapes2DPhysics* glassBlock1;
 	BasicShapes2DPhysics* glassBlock2;
 	BasicShapes2DPhysics* glassBlock3;
 	BasicShapes2DPhysics* glassBlock4;
@@ -177,15 +181,21 @@ protected:
 	BasicShapes2DPhysics* crateBlock2;
 	BasicShapes2DPhysics* crateBlock3;
 	BasicShapes2DPhysics* crateBlock4;
-	BasicShapes2DPhysics* crateBlock5;
+	BasicShapes2DPhysics* crateBlock5;*/
 
 	Quad* slingShot;
 	bool newBirdSpawned = false;
 
 	// Score / Lives
 	TextLabel* ammoLeft;
+	TextLabel* gameResultText;
+	TextLabel* gameEndHelpText;
 	int startingAmmo;
 	int currentAmmo;
+
+	int pigsInScene = 0;
+
+	bool gameWon = false;
 
 	// MENU
 	
