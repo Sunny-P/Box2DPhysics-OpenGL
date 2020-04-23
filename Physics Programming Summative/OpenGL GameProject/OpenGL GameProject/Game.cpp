@@ -130,6 +130,7 @@ Game::~Game()
 	delete glassBlock2;
 	delete glassBlock3;
 	delete glassBlock4;
+	delete glassBlock5;
 
 	delete crateBlock1;
 	delete crateBlock2;
@@ -162,8 +163,8 @@ void Game::init()
 	gravity = b2Vec2(0.0f, -98.0f);
 	physicsWorld = new b2World(gravity);
 
-	velocityIterations = 8;
-	positionIterations = 3;
+	velocityIterations = 13;
+	positionIterations = 8;
 	//---------------------------------------------------------
 
 	textureDetails tempDetails;
@@ -195,68 +196,88 @@ void Game::init()
 	slingShot->SetPosition(250.0f, 80.0f + 13.0f, -100.0f);
 
 	tempDetails = CreateTexture("Resources/Textures/angryBirdsPig.png");
-	for (int i = 0; i < 8; i++)
+	/*for (int i = 0; i < 8; i++)
 	{
-		if (i == 0)
-		{
-			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, ENEMY));
-			pigsVec.back()->SetRadius(18.0f);
-			pigsVec.back()->SetPosition((float)CENTRE_X - 70.0f + (35.0f * 2.0f) * i, 40.0f, 0.0f);
-			pigsVec.back()->SetFriction(1.0f);
-			//pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
-		}
-		else
-		{
 
 			pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
 			pigsVec.back()->SetRadius(25.0f);
 			pigsVec.back()->SetPosition((float)CENTRE_X + (35.0f * 2.0f) * i, 40.0f, 0.0f);
 			//pigsVec.back()->GetPhysicsBody()->SetUserData(&pigsVec.back());
-		}
-	}
+		
+	}*/
 
+	//1st pig in house
+	pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
+	pigsVec.back()->SetRadius(25.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X - 55.0f , 200.0f, 0.0f);
+
+	pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
+	pigsVec.back()->SetRadius(25.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X - 55.0f, 300.0f, 0.0f);
+
+	pigsVec.push_back(new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, CIRCLE, ENEMY));
+	pigsVec.back()->SetRadius(35.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X + 255.0f, 100.0f, 0.0f);
+
+	//CLosest Glass block, tall
 	tempDetails = CreateTexture("Resources/Textures/GlassBlock.png");
 	glassBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
-	glassBlock1->SetScale(320.0f, 25.0f, 1.0f);
-	glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 88.0f, 0.0f);
+	glassBlock1->SetScale(25.0f, 320.0f, 1.0f);
+	glassBlock1->SetPosition((float)CENTRE_X - 110.0f, 210.0f, 0.0f);
 	//glassBlock1->SetFriction(1.0f);
 
+	//Closet Glass inside block
 	glassBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
 	glassBlock2->SetScale(15.0f, 150.0f, 1.0f);
-	glassBlock2->SetPosition((float)CENTRE_X + 250.0f, 88.0f, 0.0f);
+	glassBlock2->SetPosition((float)CENTRE_X - 100.0f, 120.0f, 0.0f);
 
+	//Far inside glass block
 	glassBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
 	glassBlock3->SetScale(15.0f, 150.0f, 1.0f);
-	glassBlock3->SetPosition((float)CENTRE_X + 380.0f, 88.0f, 0.0f);
+	glassBlock3->SetPosition((float)CENTRE_X + 40.0f, 150.0f, 0.0f);
 
+	//roof glass
 	glassBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
-	glassBlock4->SetScale(25.0f, 25.0f, 1.0f);
-	glassBlock4->SetPosition((float)CENTRE_X - 200.0f, 100.0f, 0.0f);
+	glassBlock4->SetScale(250.0f, 25.0f, 1.0f);
+	glassBlock4->SetPosition((float)CENTRE_X - 50.0f, 500.0f, 0.0f);
+
+	glassBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	glassBlock5->SetScale(25.0f, 250.0f, 1.0f);
+	glassBlock5->SetPosition((float)CENTRE_X + 180.0f, 200.0f, 0.0f);
+
+	//Tall upstight wood PLank
+	crateBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, DESTRUCTIBLE_OBJECT);
+	crateBlock5->SetScale(25.0f, 320.0f, 1.0f);
+	crateBlock5->SetPosition((float)CENTRE_X + 50.0f, CENTRE_Y - 30.0f, 0.0f);
 
 	tempDetails = CreateTexture("Resources/Textures/Objects/crate3.jpg");
+	//Inside wood roof
 	crateBlock1 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	crateBlock1->SetScale(225.0f, 20.0f, 1.0f);
-	crateBlock1->SetPosition((float)CENTRE_X + 278.0f, 173.0f, 0.0f);
+	crateBlock1->SetScale(150.0f, 20.0f, 1.0f);
+	crateBlock1->SetPosition((float)CENTRE_X - 48.0f, 250.0f, 0.0f);
 	//crateBlock1->GetPhysicsBody()->SetUserData(&crateBlock1);
 
+	
+	//hinge
 	crateBlock2 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true);
 	crateBlock2->SetScale(25.0f, 30.0f, 1.0f);
-	crateBlock2->SetPosition((float)CENTRE_X, (float)CENTRE_Y, 0.0f);
+	crateBlock2->SetPosition((float)CENTRE_X + 405.0f, (float)CENTRE_Y, 0.0f);
 	//crateBlock2->GetPhysicsBody()->SetUserData(&crateBlock2);
 
+	//rotating block
 	crateBlock3 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	crateBlock3->SetScale(100.0f, 30.0f, 1.0f);
-	crateBlock3->SetPosition((float)CENTRE_X - 45.0f, (float)CENTRE_Y, 0.0f);
+	crateBlock3->SetScale(400.0f, 30.0f, 1.0f);
+	crateBlock3->SetPosition((float)CENTRE_X + 285.0f, (float)CENTRE_Y, 0.0f);
 	//crateBlock3->GetPhysicsBody()->SetUserData(&crateBlock3);
 
+	//Wood floor
 	crateBlock4 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	crateBlock4->SetScale(50.0f, 50.0f, 1.0f);
-	crateBlock4->SetPosition((float)CENTRE_X + 220.0f, 190.0f, 0.0f);
+	crateBlock4->SetScale( 290.0f, 25.0f, 1.0f);
+	crateBlock4->SetPosition((float)CENTRE_X - 50.0f, 100.0f, 0.0f);
 	//crateBlock4->GetPhysicsBody()->SetUserData(&crateBlock4);
 
-	crateBlock5 = new BasicShapes2DPhysics(tempDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT);
-	crateBlock5->SetScale(70.0f, 80.0f, 1.0f);
-	crateBlock5->SetPosition((float)CENTRE_X - 8.0f, CENTRE_Y - 30.0f, 0.0f);
+
+
 	//crateBlock5->GetPhysicsBody()->SetUserData(&crateBlock5);
 	
 
@@ -268,6 +289,7 @@ void Game::init()
 	revJointDef.maxMotorTorque = 200.0f;
 	revJointDef.motorSpeed = 3000000.0f;
 	revJointDef.enableMotor = true;
+
 
 	//Pulley Joint
 	/*b2Vec2 anchor1 = glassBlock4->GetPhysicsBody()->GetWorldCenter();
@@ -317,6 +339,10 @@ void Game::render()
 		if (glassBlock4 != nullptr)
 		{
 			glassBlock4->render(program);
+		}
+		if (glassBlock5 != nullptr)
+		{
+			glassBlock5->render(program);
 		}
 
 		crateBlock1->render(program);
@@ -477,6 +503,16 @@ void Game::update()
 				physicsWorld->DestroyBody(glassBlock4->GetPhysicsBody());
 				delete glassBlock4;
 				glassBlock4 = nullptr;
+			}
+		}
+		if (glassBlock5 != nullptr)
+		{
+			glassBlock5->update(deltaTime);
+			if (glassBlock5->GetLifetime() <= 0.0f)
+			{
+				physicsWorld->DestroyBody(glassBlock5->GetPhysicsBody());
+				delete glassBlock5;
+				glassBlock5 = nullptr;
 			}
 		}
 

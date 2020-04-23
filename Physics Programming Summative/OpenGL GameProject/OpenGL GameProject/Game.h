@@ -171,6 +171,7 @@ protected:
 	BasicShapes2DPhysics* glassBlock2;
 	BasicShapes2DPhysics* glassBlock3;
 	BasicShapes2DPhysics* glassBlock4;
+	BasicShapes2DPhysics* glassBlock5;
 
 	BasicShapes2DPhysics* crateBlock1;
 	BasicShapes2DPhysics* crateBlock2;
