@@ -49,7 +49,8 @@ struct textureDetails {
 };
 
 enum GameState {
-	DEFAULT = 0
+	DEFAULT = 0,
+	SCENE2
 };
 
 class Game
@@ -105,6 +106,7 @@ public:
 	void Restart();
 	void CleanupLevel();
 	void GenerateLevel();
+	void GenerateLevel2();
 
 	void EvaluatePhysicsWorldContact();
 
@@ -170,6 +172,8 @@ protected:
 	std::vector<BasicShapes2DPhysics*> pigsVec;
 
 	std::vector<BasicShapes2DPhysics*> levelBlocks;
+
+	std::vector<BasicShapes2DPhysics*> level2Blocks;
 
 	/*BasicShapes2DPhysics* glassBlock1;
 	BasicShapes2DPhysics* glassBlock2;

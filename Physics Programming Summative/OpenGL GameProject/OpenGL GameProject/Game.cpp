@@ -27,7 +27,7 @@ Game::Game(int _width, int _height)
 {
 	/*playerTextureFilePath = "Resources/Textures/Player_Ship.png";
 	backgroundFilePath = "Resources/Textures/water.png";*/
-	currentGameState = DEFAULT;
+	currentGameState = SCENE2;
 
 	//audioSys = new Audio();
 
@@ -338,6 +338,8 @@ void Game::init()
 	pulleyJointDef.Initialize(glassBlock4->GetPhysicsBody(), crateBlock4->GetPhysicsBody(), groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
 	pulleyJoint = (b2PulleyJoint*)physicsWorld->CreateJoint(&pulleyJointDef);*/
 
+
+
 	revJoint = (b2RevoluteJoint*)physicsWorld->CreateJoint(&revJointDef);
 	//physicsCircle->SetDensity(1.0f);
 
@@ -369,42 +371,36 @@ void Game::render()
 
 		//ground->render(program);
 		//leftBoundWall->render(program);
-		/*holdingBlockBot->render(program);
-		holdingBlockRight->render(program);*/
-
-		/*if (glassBlock1 != nullptr)
-		{
-			glassBlock1->render(program);
-		}
-		if (glassBlock2 != nullptr)
-		{
-			glassBlock2->render(program);
-		}
-		if (glassBlock3 != nullptr)
-		{
-			glassBlock3->render(program);
-		}
-		if (glassBlock4 != nullptr)
-		{
-			glassBlock4->render(program);
-		}
-		if (glassBlock5 != nullptr)
-		{
-			glassBlock5->render(program);
-		}
-
-		crateBlock1->render(program);
-		crateBlock2->render(program);
-		crateBlock3->render(program);
-		crateBlock4->render(program);
-
-		if (crateBlock5 != nullptr)
-		{
-			crateBlock5->render(program);
-		}*/
-		
 
 		RenderGameScene();
+		break;
+
+	case SCENE2:
+		slingShot->render(program);
+
+		for (unsigned int i = 0; i < birdsVec.size(); i++)
+		{
+			if (birdsVec.at(i) != nullptr)
+			{
+				birdsVec.at(i)->render(program);
+			}
+		}
+
+		for (unsigned int i = 0; i < pigsVec.size(); i++)
+		{
+			if (pigsVec.at(i) != nullptr)
+			{
+				pigsVec.at(i)->render(program);
+			}
+		}
+
+		for (unsigned int i = 0; i < level2Blocks.size(); i++)
+		{
+			if (level2Blocks.at(i) != nullptr)
+			{
+				level2Blocks.at(i)->render(program);
+			}
+		}
 		break;
 
 	default:
@@ -533,74 +529,77 @@ void Game::update()
 			}
 		}
 
-		/*if (glassBlock1 != nullptr)
-		{
-			glassBlock1->update(deltaTime);
-			if (glassBlock1->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(glassBlock1->GetPhysicsBody());
-				delete glassBlock1;
-				glassBlock1 = nullptr;
-			}
-		}
-		if (glassBlock2 != nullptr)
-		{
-			glassBlock2->update(deltaTime);
-			if (glassBlock2->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(glassBlock2->GetPhysicsBody());
-				delete glassBlock2;
-				glassBlock2 = nullptr;
-			}
-		}
-		if (glassBlock3 != nullptr)
-		{
-			glassBlock3->update(deltaTime);
-			if (glassBlock3->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(glassBlock3->GetPhysicsBody());
-				delete glassBlock3;
-				glassBlock3 = nullptr;
-			}
-		}
-		if (glassBlock4 != nullptr)
-		{
-			glassBlock4->update(deltaTime);
-			if (glassBlock4->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(glassBlock4->GetPhysicsBody());
-				delete glassBlock4;
-				glassBlock4 = nullptr;
-			}
-		}
-		if (glassBlock5 != nullptr)
-		{
-			glassBlock5->update(deltaTime);
-			if (glassBlock5->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(glassBlock5->GetPhysicsBody());
-				delete glassBlock5;
-				glassBlock5 = nullptr;
-			}
-		}
-		if (crateBlock5 != nullptr)
-		{
-			crateBlock5->update(deltaTime);
-			if (crateBlock5->GetLifetime() <= 0.0f)
-			{
-				physicsWorld->DestroyBody(crateBlock5->GetPhysicsBody());
-				delete crateBlock5;
-				crateBlock5 = nullptr;
-			}
-		}
-
-		crateBlock1->update(deltaTime);
-		crateBlock2->update(deltaTime);
-		crateBlock3->update(deltaTime);
-		crateBlock4->update(deltaTime);*/
-		
-
 		EvaluatePhysicsWorldContact();
+
+		if (gameWon)
+		{
+			currentGameState = SCENE2;
+			// Cleanup this level
+			CleanupLevel();
+			// Generate Level 2
+			GenerateLevel2();
+
+			currentAmmo = 6;
+			gameWon = false;
+		}
+		break;
+
+	case SCENE2:
+		physicsWorld->Step((float32)physicsDeltaT, (int32)velocityIterations, (int32)positionIterations);
+
+		if (currentShootDelay > 0.0f)
+		{
+			currentShootDelay -= deltaTime;
+		}
+
+		slingShot->update();
+
+		leftBoundWall->update(deltaTime);
+		ground->update(deltaTime);
+
+		for (unsigned int i = 0; i < birdsVec.size(); i++)
+		{
+			if (birdsVec.at(i) != nullptr)
+			{
+				birdsVec.at(i)->update(deltaTime);
+				if (birdsVec.at(i)->GetLifetime() <= 0.0f)
+				{
+					physicsWorld->DestroyBody(birdsVec.at(i)->GetPhysicsBody());
+					delete birdsVec.at(i);
+					birdsVec.at(i) = nullptr;
+				}
+			}
+		}
+
+		for (unsigned int i = 0; i < pigsVec.size(); i++)
+		{
+			if (pigsVec.at(i) != nullptr)
+			{
+				pigsVec.at(i)->update(deltaTime);
+
+				if (pigsVec.at(i)->GetLifetime() <= 0.0f)
+				{
+					physicsWorld->DestroyBody(pigsVec.at(i)->GetPhysicsBody());
+					delete pigsVec.at(i);
+					pigsVec.at(i) = nullptr;
+				}
+			}
+		}
+
+		for (unsigned int i = 0; i < level2Blocks.size(); i++)
+		{
+			if (level2Blocks.at(i) != nullptr)
+			{
+				level2Blocks.at(i)->update(deltaTime);
+
+				if (level2Blocks.at(i)->GetLifetime() <= 0.0f)
+				{
+					physicsWorld->DestroyBody(level2Blocks.at(i)->GetPhysicsBody());
+					delete level2Blocks.at(i);
+					level2Blocks.at(i) = nullptr;
+				}
+			}
+		}
 		break;
 
 	default:
@@ -732,10 +731,10 @@ void Game::UpdateGameText()
 
 void Game::processInput()
 {
-	switch (currentGameState)
-	{
-	case DEFAULT:
-	{
+	//switch (currentGameState)
+	//{
+	//case DEFAULT:
+	//{
 		camera->processInput();
 
 		// Quit program using ESC
@@ -832,7 +831,7 @@ void Game::processInput()
 				//}
 			//}
 
-			if ((float)mouseX < 250.0f && (float)mouseY > 480.0f)
+			if ((float)mouseX < 250.0f && (float)mouseY > 400.0f)
 			{
 				//std::cout << mouseX << std::endl;
 				//std::cout << mouseY << std::endl;
@@ -930,13 +929,13 @@ void Game::processInput()
 			}
 		}*/
 
-		break;
-	}
-	default:
-	{
-		break;
-	}
-	}
+		//break;
+	//}
+	//default:
+	//{
+		//break;
+	//}
+	//}
 }
 
 void Game::keyboardDown(unsigned char key, int x, int y)
@@ -1139,8 +1138,18 @@ void Game::Restart()
 	currentAmmo = 6;
 	gameWon = false;
 
-	CleanupLevel();
-	GenerateLevel();
+	switch (currentGameState)
+	{
+	case DEFAULT:
+		CleanupLevel();
+		GenerateLevel();
+		break;
+	case SCENE2:
+		CleanupLevel();
+		GenerateLevel2();
+		break;
+	}
+	
 }
 
 void Game::CleanupLevel()
@@ -1177,6 +1186,17 @@ void Game::CleanupLevel()
 		}
 	}
 	levelBlocks.clear();
+
+	for (int it = 0; it != level2Blocks.size(); ++it)
+	{
+		if (level2Blocks.at(it) != nullptr)
+		{
+			physicsWorld->DestroyBody(level2Blocks.at(it)->GetPhysicsBody());
+			delete level2Blocks.at(it);
+			level2Blocks.at(it) = nullptr;
+		}
+	}
+	level2Blocks.clear();
 
 	std::cout << "Level Cleaned" << std::endl;
 }
@@ -1324,6 +1344,42 @@ void Game::GenerateLevel()
 	revJoint = (b2RevoluteJoint*)physicsWorld->CreateJoint(&revJointDef);
 
 	std::cout << "Level Generated" << std::endl;
+}
+
+void Game::GenerateLevel2()
+{
+	textureDetails texDetails = CreateTexture("Resources/Textures/Objects/Crate3.jpg");
+
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true));
+	level2Blocks.back()->SetScale(10.f, 10.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X - 50.0f, (float)CENTRE_Y + 200.0f, 0.0f);
+
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true));
+	level2Blocks.back()->SetScale(10.f, 10.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X + 100.0f, (float)CENTRE_Y + 200.0f, 0.0f);
+
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
+	level2Blocks.back()->SetScale(50.f, 50.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X - 55.0f, (float)CENTRE_Y + 100.0f, 0.0f);
+
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
+	level2Blocks.back()->SetScale(10.f, 10.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X + 105.0f, (float)CENTRE_Y + 100.0f, 0.0f);
+
+	//Pulley Joint
+	b2Vec2 anchor1 = level2Blocks.at(2)->GetPhysicsBody()->GetWorldCenter();
+	b2Vec2 anchor2 = level2Blocks.at(3)->GetPhysicsBody()->GetWorldCenter();
+	b2Vec2 groundAnchor1(level2Blocks.at(0)->GetPhysicsBody()->GetWorldCenter());
+	b2Vec2 groundAnchor2(level2Blocks.at(1)->GetPhysicsBody()->GetWorldCenter());
+	float32 ratio = 1.0f;
+	b2PulleyJointDef pulleyJointDef;
+	pulleyJointDef.Initialize(level2Blocks.at(2)->GetPhysicsBody(), level2Blocks.at(3)->GetPhysicsBody(), groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
+	pulleyJoint = (b2PulleyJoint*)physicsWorld->CreateJoint(&pulleyJointDef);
+
+	texDetails = CreateTexture("Resources/Textures/angryBirdsPig.png");
+	pigsVec.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, CIRCLE, ENEMY));
+	pigsVec.back()->SetRadius(25.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X, 20.0f, 0.0f);
 }
 
 void Game::EvaluatePhysicsWorldContact()
