@@ -27,7 +27,7 @@ Game::Game(int _width, int _height)
 {
 	/*playerTextureFilePath = "Resources/Textures/Player_Ship.png";
 	backgroundFilePath = "Resources/Textures/water.png";*/
-	currentGameState = SCENE2;
+	currentGameState = DEFAULT;
 
 	//audioSys = new Audio();
 
@@ -831,8 +831,8 @@ void Game::processInput()
 				//}
 			//}
 
-			//if ((float)mouseX < 250.0f && (float)mouseY > 400.0f)
-			//{
+			if ((float)mouseX < 250.0f && (float)mouseY > 435.0f)
+			{
 				//std::cout << mouseX << std::endl;
 				//std::cout << mouseY << std::endl;
 				if (currentAmmo > 0)
@@ -865,7 +865,7 @@ void Game::processInput()
 						}
 					}
 				}
-			//}
+			}
 		}
 		if (Input::GetMouseState(MOUSE_LEFT) == UP)
 		{
@@ -1135,9 +1135,6 @@ void Game::Restart()
 	wireframeOn = false;
 	scissorTestOn = false;
 
-	currentAmmo = 6;
-	gameWon = false;
-
 	switch (currentGameState)
 	{
 	case DEFAULT:
@@ -1146,10 +1143,22 @@ void Game::Restart()
 		break;
 	case SCENE2:
 		CleanupLevel();
-		GenerateLevel2();
+
+		if (gameWon)
+		{
+			currentGameState = DEFAULT;
+			GenerateLevel();
+		}
+		else
+		{
+			GenerateLevel2();
+		}
+		
 		break;
 	}
 	
+	currentAmmo = 6;
+	gameWon = false;
 }
 
 void Game::CleanupLevel()
@@ -1363,7 +1372,7 @@ void Game::GenerateLevel2()
 	level2Blocks.back()->SetPosition((float)CENTRE_X - 50.0f, (float)CENTRE_Y - 30.0f, 0.0f);
 
 	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
-	level2Blocks.back()->SetScale(60.f, 60.0f, 1);
+	level2Blocks.back()->SetScale(75.f, 75.0f, 1);
 	level2Blocks.back()->SetPosition((float)CENTRE_X + 100.0f, (float)CENTRE_Y - 30.0f, 0.0f);
 
 	//Pulley Joint
@@ -1375,6 +1384,17 @@ void Game::GenerateLevel2()
 	b2PulleyJointDef pulleyJointDef;
 	pulleyJointDef.Initialize(level2Blocks.at(2)->GetPhysicsBody(), level2Blocks.at(3)->GetPhysicsBody(), groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
 	pulleyJoint = (b2PulleyJoint*)physicsWorld->CreateJoint(&pulleyJointDef);
+
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
+	level2Blocks.back()->SetScale(25.f, 75.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X - 50.0f, (float)CENTRE_Y - 70.0f, 0.0f);
+
+	// Weld joint
+	b2Vec2 weldAnchorPoint = level2Blocks.at(4)->GetPhysicsBody()->GetPosition();
+	weldAnchorPoint.y + 37.5f;
+	b2WeldJointDef weldJointDef;
+	weldJointDef.Initialize(level2Blocks.at(2)->GetPhysicsBody(), level2Blocks.at(4)->GetPhysicsBody(), weldAnchorPoint);
+	physicsWorld->CreateJoint(&weldJointDef);
 
 	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true));
 	level2Blocks.back()->SetScale(25.f, 650.0f, 1);
@@ -1388,8 +1408,6 @@ void Game::GenerateLevel2()
 	pigsVec.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, CIRCLE, ENEMY));
 	pigsVec.back()->SetRadius(30.0f);
 	pigsVec.back()->SetPosition((float)CENTRE_X + 100.0f, 35.0f, 0.0f);
-
-
 }
 
 void Game::EvaluatePhysicsWorldContact()
