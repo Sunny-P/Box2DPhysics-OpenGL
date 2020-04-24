@@ -831,8 +831,8 @@ void Game::processInput()
 				//}
 			//}
 
-			if ((float)mouseX < 250.0f && (float)mouseY > 400.0f)
-			{
+			//if ((float)mouseX < 250.0f && (float)mouseY > 400.0f)
+			//{
 				//std::cout << mouseX << std::endl;
 				//std::cout << mouseY << std::endl;
 				if (currentAmmo > 0)
@@ -865,7 +865,7 @@ void Game::processInput()
 						}
 					}
 				}
-			}
+			//}
 		}
 		if (Input::GetMouseState(MOUSE_LEFT) == UP)
 		{
@@ -1359,12 +1359,12 @@ void Game::GenerateLevel2()
 	level2Blocks.back()->SetPosition((float)CENTRE_X + 100.0f, (float)CENTRE_Y + 200.0f, 0.0f);
 
 	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
-	level2Blocks.back()->SetScale(50.f, 50.0f, 1);
-	level2Blocks.back()->SetPosition((float)CENTRE_X - 55.0f, (float)CENTRE_Y + 100.0f, 0.0f);
+	level2Blocks.back()->SetScale(100.f, 25.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X - 50.0f, (float)CENTRE_Y - 30.0f, 0.0f);
 
 	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT));
-	level2Blocks.back()->SetScale(10.f, 10.0f, 1);
-	level2Blocks.back()->SetPosition((float)CENTRE_X + 105.0f, (float)CENTRE_Y + 100.0f, 0.0f);
+	level2Blocks.back()->SetScale(60.f, 60.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X + 100.0f, (float)CENTRE_Y - 30.0f, 0.0f);
 
 	//Pulley Joint
 	b2Vec2 anchor1 = level2Blocks.at(2)->GetPhysicsBody()->GetWorldCenter();
@@ -1376,10 +1376,20 @@ void Game::GenerateLevel2()
 	pulleyJointDef.Initialize(level2Blocks.at(2)->GetPhysicsBody(), level2Blocks.at(3)->GetPhysicsBody(), groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
 	pulleyJoint = (b2PulleyJoint*)physicsWorld->CreateJoint(&pulleyJointDef);
 
+	level2Blocks.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, SQUARE, WORLD_OBJECT, true));
+	level2Blocks.back()->SetScale(25.f, 650.0f, 1);
+	level2Blocks.back()->SetPosition((float)CENTRE_X + 25.0f, (float)CENTRE_Y, 0.0f);
+
 	texDetails = CreateTexture("Resources/Textures/angryBirdsPig.png");
 	pigsVec.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, CIRCLE, ENEMY));
 	pigsVec.back()->SetRadius(25.0f);
-	pigsVec.back()->SetPosition((float)CENTRE_X, 20.0f, 0.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X - 50.0f, (float)CENTRE_Y + 100.0f, 0.0f);
+
+	pigsVec.push_back(new BasicShapes2DPhysics(texDetails.tex, physicsWorld, CIRCLE, ENEMY));
+	pigsVec.back()->SetRadius(30.0f);
+	pigsVec.back()->SetPosition((float)CENTRE_X + 100.0f, 35.0f, 0.0f);
+
+
 }
 
 void Game::EvaluatePhysicsWorldContact()
